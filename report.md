@@ -24,7 +24,7 @@ För att extrahera en labbmodul ur det exporerade html-dokumentet krävs lite en
 
 Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras. Exemplet ligger också live [här](http://krawaller.github.com/gleerups/export/applets.html).
 
-<imr src='./bilder/geogebraweb-composite.png' />
+<img src='./bilder/geogebraweb-composite.png' />
 
 ### Animerad GIF
 
