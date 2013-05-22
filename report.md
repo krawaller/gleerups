@@ -11,4 +11,4 @@ Vid inklusion av enklare labbar i en digital text så skulle också animerad GIF
 
 Här är ett exempel där jag manipulerat laborationen om enhetscirkeln så att vinkeln bestäms utifrån en slider, som sedan fått definiera animationen:
 
-<img src='export/353_Enhetscirkeln.gif' />
+<img src='./export/353_Enhetscirkeln.gif' />
