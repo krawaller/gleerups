@@ -1,9 +1,3 @@
-<style type="text/css">
-	.sizedpic {
-		height: 60%;
-		width: 60%;
-	}
-</style>
 
 ## EXPORTERING
 
@@ -25,13 +19,13 @@ Tungvikt. 212 filer, 55 megabyte. En översikt över innehållet:
 
 Bla bla. Så, vad returneras? Se här:
 
-<img src='./bilder/geogebraweb-export.png' class='sizedpic'/>
+<img src='./bilder/geogebraweb-export.png' />
 
 För att extrahera en labbmodul ur det exporerade html-dokumentet krävs lite enkel handpåläggning. Själva appleten ryms i article-elementet. Denna är 'självförsörjande', och kan kopieras och integreras i ett annat html-dokument. Enda förutsättningen är att detta html-dokument laddar in filen `web.nocache.js` från GeoGebraWeb.
 
 Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras. Exemplet ligger också live [här](http://krawaller.github.com/gleerups/export/applets.html).
 
-<img src='./bilder/geogebraweb-composite.png' class='sizedpic' />
+<img src='./bilder/geogebraweb-composite.png' />
 
 Notera att i exempelfilen så kan det hända att labbarna initialt är väldigt små, men sedan får sin rätta storlek när innehållet laddats. Detta gör då att övrigt innehåll på sidan förskjuts, vilket kan se oprofessionellt ut. Det är bland annat för att förhindra denna effekt som den ursprungliga exporteringen nästlade article-elementet i en tabell med given storlek, så om man vill säkerställa att ingen förskjutning sker så kan man helt enkelt behålla tabellen från exporteringen.
 
@@ -40,11 +34,11 @@ Notera att i exempelfilen så kan det hända att labbarna initialt är väldigt 
 
 Trogen! Bla bla bla. Renderingen! Här först GeoGebra:
 
-<img src='./bilder/comparison-geogebra.png' />
+<img src='./bilder/comparison-geogebra.png' style='height: 60%; width=60%;' />
 
 Samma labb i HTML:
 
-<img src='./bilder/comparison-html.png' />
+<img src='./bilder/comparison-html.png' style='height: 60%; width=60%;' />
 
 
 ### Animerad GIF
