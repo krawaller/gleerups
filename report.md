@@ -34,11 +34,40 @@ Notera att i exempelfilen så kan det hända att labbarna initialt är väldigt 
 
 Trogen! Bla bla bla. Renderingen! Här först GeoGebra:
 
-<img src='./bilder/comparison-geogebra.png' style='height: 60%; width=60%;' />
+<img src='./bilder/comparison-geogebra.png' style='border: 1px solid black; max-height: 60%; max-width: 60%;' />
 
 Samma labb i HTML:
 
-<img src='./bilder/comparison-html.png' style='height: 60%; width=60%;' />
+<img src='./bilder/comparison-html.png' style='border: 1px solid black; max-height: 60%; max-width: 60%;' />
+
+Som synes är HTML-versionen ganska lik, om än inte helt identisk. Exempelvis matematiska uttryck ser lite annorlunda ut, vilket beror på att de i Geogebra renderas internt, medan de i HTML-versionen använder JavaScript-biblioteket [MathQuill](http://www.mathquill.com).
+
+#### Funktionalitet
+
+Väldigt mycket är gjort, men det finns en del saker som fortfarande saknas i GeoGebraWeb. Det handlar dock mest om vyer, vilket förmodligen inte påverkar labbarnas användbarhet.
+
+
+#### Tillförlitlighet
+
+Funktionaliteten verkar överlag översättas utan problematik till webbformat. Jag är imponerad!
+
+Den enda luckan jag hittat hittills syns i bildjämförelsen ovan. Notera i den första bilden, från Geogebra, att uträkningen för derivatan syns längst upp till höger. I HTML-bilden syns bara texten "Derivata:", men själva uträkningen saknas!
+
+Det beror på att Bo har använt ett LaTeX-uttryck som inte stöds av den renderare som HTML-versionen använder, nämligen MathQuill. Bo har skrivit följande:
+
+<img src='./bilder/bossegeoinput.png' />
+
+Funktionen `\acute` som Bo har använt för att få till "prim"-markeringen av derivatan stöds inte av MathQuill. När jag istället ändrar till att skriva in primtecknet direkt:
+
+<img src='./bilder/bossegeoinput_fixed.png' />
+
+...så fungerar det även i HTML-exporten. Båda skrivsätten fungerar i GeoGebraexporten. For completion's sake så finns exporten med den "felaktiga" koden [här](export/321_Symmetrisk_ändringskvot_derivata.html), och den fixade exporten [här](export/321_Symmetrisk_ändringskvot_derivata_fixed.html).
+
+Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoGebra stöder tror jag är den största faran när labbarna skall exporteras. Nu bör förmodligen varje labb kontrolleras efter export ändå, men jag har satt ihop en liten [testsandlåda](mathquill_sandbox.html) där Bo och hans kumpaner enkelt kan testa om MathQuill kan rendera ett givet LaTeX-uttryck.
+
+<img src='./bilder/sandbox.png' style='border: 1px solid black;' />
+
+Om ingen rendering dyker upp nedanför textfältet, eller om renderingen är felaktig, så betyder det att MathQuill har problem med det givna uttrycket och att LaTeX-koden i GeoGebralabben därmed bör omformuleras. Min gissning är dock att det sällan kommer innebära några problem, då MathQuill ändå innehåller alla grundläggande funktioner. Mest kommer det förmodligen handla om mer eller mindre kosmetiska kodändringar, i stil med den jag fick genomföra för att fixa derivatalaborationen ovan.
 
 
 ### Animerad GIF

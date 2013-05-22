@@ -1,0 +1,17 @@
+<!DOCTYPE>
+<head>
+	<link rel="stylesheet" href="GeoGebraWeb-4.2.43.0/web/css/mathquill.css"></link>
+</head>
+<body>
+	<script src="GeoGebraWeb-4.2.43.0/web/js/jquery-1.7.2.min.js"></script>
+	<script src="GeoGebraWeb-4.2.43.0/web/js/mathquill.js"></script>
+	<p>Skriv in LaTeX-uttryck att testa:</p>
+	<p>
+		<input type="text" value="\frac{2}{3}" id="input"></input><button id="render">rendera</button>
+	</p>
+	<p id="output" />
+	<script type="text/javascript">
+	$("#input").focus(function(e){ $(this).select(); }).mouseup(function(e){e.preventDefault();});
+	$("#render").click(function(e){ $("#output").text($("#input").val()).mathquill(); });
+	</script>
+</body>
