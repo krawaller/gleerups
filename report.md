@@ -61,7 +61,7 @@ Funktionen `\acute` som Bo har använt för att få till "prim"-markeringen av d
 
 <img src='./bilder/bossegeoinput_fixed.png' />
 
-...så fungerar det även i HTML-exporten. Båda skrivsätten fungerar i GeoGebraexporten. For completion's sake så finns exporten med den "felaktiga" koden [här](export/321_Symmetrisk_andringskvot_derivata.html), och den fixade exporten [här](export/321_Symmetrisk_andringskvot_derivata_fixed.html).
+...så fungerar det även i HTML-exporten. Båda skrivsätten fungerar i GeoGebraexporten. For completion's sake så finns exporten med den "felaktiga" koden [här](http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata.html), och den fixade exporten [här](http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata_fixed.html).
 
 Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoGebra stöder tror jag är den största faran när labbarna skall exporteras. Nu bör förmodligen varje labb kontrolleras efter export ändå, men jag har satt ihop en liten [testsandlåda](mathquill_sandbox.html) där Bo och hans kumpaner enkelt kan testa om MathQuill kan rendera ett givet LaTeX-uttryck.
 
