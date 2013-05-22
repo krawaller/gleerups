@@ -11,7 +11,7 @@
 	</p>
 	<p id="output" />
 	<script type="text/javascript">
-	$("#input").focus(function(e){ $(this).select(); }).mouseup(function(e){e.preventDefault();});
+	$("#input").focus(function(e){ var me = $(this); setTimeout(function(){me.select();},0); });
 	$("#render").click(function(e){ $("#output").text($("#input").val()).mathquill(); });
 	</script>
 </body>
