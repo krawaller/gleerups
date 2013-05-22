@@ -14,7 +14,7 @@ För att nå dessa enheter påbörjade GeoGebra projektet **GeoGebra Mobile**. D
 
 Denna exportering är skapad med hjälp av **Google Web Toolkit** (GWT), som är ett ramverk i vilket man kan skriva webbapplikationer med Java. GWT kompilerar sedan Javakoden till JavaScript som läses av webbläsaren. Detta är i sammanhanget viktigt - GeoGebra har alltså inte helt omskapats i JavaScript, utan funktionaliteten är "portad" från Java.
 
-
+Det är denna exporteringsfunktion, GeoGebraWeb, som undersöks i denna rapport.
 
 
 
@@ -47,6 +47,8 @@ Nedan syns exempel på källkoden för ett minimalt dokument där två olika lab
 <img src='./bilder/geogebraweb-composite.png' />
 
 Notera att i exempelfilen så kan det hända att labbarna initialt är väldigt små, men sedan får sin rätta storlek när innehållet laddats. Detta gör då att övrigt innehåll på sidan förskjuts, vilket kan se oprofessionellt ut. Det är bland annat för att förhindra denna effekt som den ursprungliga exporteringen nästlade article-elementet i en tabell med given storlek, så om man vill säkerställa att ingen förskjutning sker så kan man helt enkelt behålla tabellen från exporteringen.
+
+
 
 
 #### Jämförelse Geogebra-HTML
