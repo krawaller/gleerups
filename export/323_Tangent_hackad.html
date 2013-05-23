@@ -13,7 +13,8 @@ data-param-showResetIcon="false" data-param-enableLabelDrags="false" data-param-
 <p><span>Uppdatera slider d: </span> <input type="number" id="slidenum" min="-5" max="5" value="5" /></p>
 <p><input type="checkbox" checked="checked" id="grid" /><span>Visa stödlinjer</span></p>
 <p><span>Linjetjocklekar: </span> <input type="number" id="fat" min="1" max="13" value="5" /></p>
-<button id="flip">
+<p><button id="flip"></button></p>
+<p id="msg">Ändra slider b så uppdateras denna text!</p>
 
 <script type="text/javascript">
 	var flipped = 0;
@@ -41,6 +42,12 @@ data-param-showResetIcon="false" data-param-enableLabelDrags="false" data-param-
 		}
 		updateFlipButton();
 	});
+	var updateMsg = function(){
+		$("#msg").text("Ojoj, nu har slider b fått värdet "+ggbApplet.getValue("b")+"!");
+	};
+	function ggbOnInit(){
+		ggbApplet.registerObjectUpdateListener("b","updateMsg");
+	}
 </script>
 
 </body></html>
