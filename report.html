@@ -1,0 +1,253 @@
+<html><head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Utvärdering av GeoGebraWeb</title>
+</head><body>
+<style type="text/css">
+	h1,h2,h3,h4,h5 {
+		margin-top: 3em;
+		margin-left: 2em;
+	}
+	#wrapper {
+		position: relative;
+		max-width: 750px;
+		margin: 2em auto;
+	}
+	img {
+		display: block;
+		margin: 2em auto;
+		max-width: 75%;
+		border: 1px solid #CCC;
+		box-shadow: 10px 10px 5px #888;
+	}
+	body {
+		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 14px;
+		line-height: 20px;
+		color: #333333;
+	}
+</style>
+<div id="wrapper">
+
+<h1 id="utvrderingavgeogebrashtml-export">Utvärdering av GeoGebras HTML-export</h1>
+
+<p>I denna rapport undersöker Krawaller, för Gleerups räkning, nuvarande status på GeoGebras exportfunktionalitet till HTML5. Rapporten är tänkt att tjäna som beslutsunderlag för Gleerups kommande vägskäl angående hur man skall gå vidare med de interaktiva laborationerna i sin webbmiljö - kan man exportera de befintliga laborationerna från GeoGebra, eller behöver man återskapa laborationerna med rena webbtekniker?</p>
+
+<h2 id="nbspnbspnbspbakgrund">1 &nbsp;&nbsp;&nbsp; Bakgrund</h2>
+
+<p><strong>GeoGebra</strong> är ett matematikvisualiseringsverktyg skrivet i <strong>Java</strong>. Filer som skapas i GeoGebra kan antingen öppnas i själva programvaran, eller inkluderas i en HTML-sida som en <strong>Java applet</strong>. Denna teknik används i dagsläget i Gleerups digitala material.</p>
+
+<p>Tekniken har flera nackdelar; framför allt fungerar den inte i webbläsare som inte har tillgång till Java. Detta inkluderar både Android-enheter (trots att operativsystemet är baserat på Java) och iOS-enheter.</p>
+
+<p>För att nå dessa enheter påbörjade GeoGebra projektet <strong>GeoGebra Mobile</strong>. Detta blev sedermera ersatt av nuvarande <strong>GeoGebraWeb</strong>. Projektet innebar att man i programvaran lade till möjlighet att exportera GeoGebrafiler till webbformat, som kan visas i en webbläsare utan inblandning av Java.</p>
+
+<p>Denna exportering är skapad med hjälp av <strong>Google Web Toolkit</strong> (GWT), som är ett ramverk i vilket man kan skriva webbapplikationer med Java. GWT kompilerar sedan Javakoden till JavaScript som läses av webbläsaren. Detta är i sammanhanget viktigt - GeoGebra har alltså inte helt omskapats i JavaScript, utan funktionaliteten är &#8220;portad&#8221; från Java.</p>
+
+<p>Det är denna exporteringsfunktion, GeoGebraWeb, som undersöks i denna rapport. Utgångspunkten, förutom empiriska studier, har varit dokumentationen på <a href="http://wiki.geogebra.org/en/Tutorial:Creating_HTML5_documents_with_GeoGebraWeb">GeoGebraWebs Wiki</a> samt dess <a href="http://dev.geogebra.org/trac/wiki/GeoGebraWeb">developersida</a>.</p>
+
+<h2 id="nbspnbspnbspunderskning">2 &nbsp;&nbsp;&nbsp; Undersökning</h2>
+
+<p>Här följer nu en djupdykning i resultatet av att exportera en labb till html-kod. Djupdykningen är gjord med baktanke att undersöka om funktionaliteten kan mäta sig med en &#8220;ren&#8221; webblösning. Min förutfattade mening (som kom på skam) var att så inte är fallet.</p>
+
+<h3 id="nbspnbspnbspnrbildavdenexporteradehtml-kodenienapplet">2.1 &nbsp;&nbsp;&nbsp; Närbild av den exporterade html-koden i en applet</h3>
+
+<p>Låt oss först titta närmare på vad GeoGebra faktiskt spottar ur sig när man väljer att exportera en .ggb-fil till HTML:</p>
+
+<p><img src='./bilder/geogebraweb-export.png' /></p>
+
+<p>Resultatet blir alltid en &#8220;fullständig&#8221; html-fil, med både head- och body-tagg. Denna fil fungerar nu som vad GeoGebra kallar för en <strong>app</strong>, det vill säga ett html-dokument som inte består av något annat än den exporterade GeoGebra filen.</p>
+
+<p>För att åstadkomma ett fristående kodblock ur detta (vad GeoGebra kallar <strong>applet</strong>) som man sedan kan lägga in i ett annat html-dokument krävs lite enkel handpåläggning. Själva appleten ryms i article-elementet. Denna är &#8216;självförsörjande&#8217;, och kan kopieras och integreras i ett annat html-dokument. Enda förutsättningen är att detta html-dokument laddar in filen <code>web.nocache.js</code> från GeoGebraWeb.</p>
+
+<p>Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras samtidigt, tillsammans med annat html-innehåll. Exemplet ligger också live <a href="http://krawaller.github.com/gleerups/export/applets.html">här</a>.</p>
+
+<p><img src='./bilder/geogebraweb-composite.png' /></p>
+
+<p>Notera att när exempelfilen renderas så kan det hända att labbarna initialt är väldigt små, men sedan får sin rätta storlek när innehållet laddats. Detta gör då att övrigt innehåll på sidan förskjuts, vilket kan se oprofessionellt ut. Det är bland annat för att förhindra denna effekt som den ursprungliga exporteringen nästlade article-elementet i en tabell med given storlek, så om man vill säkerställa att ingen förskjutning sker så kan man helt enkelt behålla tabellen från exporteringen.</p>
+
+<h3 id="nbspnbspnbspfrutsttningarfrattkrageogebrawebutanyttreberoenden">2.2 &nbsp;&nbsp;&nbsp; Förutsättningar för att köra GeoGebraWeb utan yttre beroenden</h3>
+
+<p>Den exporterade appleten hänvisar, som vi såg ovan, till kod på GeoGebras servrar. Hur gör man då för att använda den exporterade koden i offlineläge eller självständigt på egna servrar (så som jag gjorde i applet-exemplet)?</p>
+
+<p>Steg ett är att man laddar ner GeogebraWeb-paketet, vilket finns att tillgå <a href="http://dev.geogebra.org/download/web/GeoGebraWeb-latest.zip">här</a>. Det är ett ganska tungt paket; 212 filer, 55 megabyte. Här är en snabb översikt över innehållet:</p>
+
+<p><img src='./bilder/geogebraweb-content.png' /></p>
+
+<p>Gissningsvis kan man raka bort en del av detta, men förmodligen inte utan att för varje applet kontrollera att ingenting gått sönder. Med andra ord får man nog räkna med att adoptera in hela detta paket i sin webblösning om man vill ha &#8220;självständiga&#8221; applets som inte behöver hämta filer från Geogebras server.</p>
+
+<p>Å andra sidan är det tämligen enkelt att nyttja när den investeringen väl är gjord; det enda som behövs är en sökväg till <code>web.nocache.js</code>. Den läser sedan i sin tur in alla andra beroenden. Därför är det viktigt att katalogens struktur bibehålls, samt <code>web.nocache.js</code> relativa position - vi kan inte flytta den någon annanstans. </p>
+
+<h3 id="nbspnbspnbspjmfrelsemellangeogebralabbochdenexporeradehtml-versionen">2.3 &nbsp;&nbsp;&nbsp; Jämförelse mellan Geogebralabb och den exporerade HTML-versionen</h3>
+
+<p>Förlorar HTML-versionen någon funktionalitet i exporteringen, eller är den likvärdig med sin ursprungliga .ggb-förfäder? Efter hyfsat omfattande påläsning och experimenterande så verkar det som att den faktiskt är imponerande trogen.</p>
+
+<p>Låt oss titta på ett exempel! Här kommer en skärmdump från en av labbarna, så som den ser ut i GeoGebra:</p>
+
+<p><img src='./bilder/comparison-geogebra.png' /></p>
+
+<p>Här har vi samma labb i HTML-format:</p>
+
+<p><img src='./bilder/comparison-html.png' /></p>
+
+<p>Som synes är HTML-versionen ganska lik, om än inte helt identisk. Exempelvis matematiska uttryck ser lite annorlunda ut, vilket beror på att de i Geogebra renderas internt medan de i HTML-versionen använder JavaScript-biblioteket <a href="http://www.mathquill.com">MathQuill</a>. Positionering av vissa etiketter är inte heller 100%:igt överensstämmande, men ändå så nära att man måste leta efter skillnaderna.</p>
+
+<h4 id="nbspnbspnbsptillfrlitlighet">2.3.2 &nbsp;&nbsp;&nbsp; Tillförlitlighet</h4>
+
+<p>Funktionaliteten verkar överlag översättas utan problematik till webbformat. Jag är imponerad! Den enda luckan jag hittat hittills syns i bildjämförelsen ovan. Notera i den första bilden, från Geogebra, att uträkningen för derivatan syns längst upp till höger.</p>
+
+<p><img src='./bilder/derivata.png' /></p>
+
+<p>I bilden från HTML-exporten syns bara texten &#8220;Derivata:&#8221;, men själva uträkningen saknas! Det beror på att Bo har använt ett LaTeX-uttryck som inte stöds av den renderare (MathQuill) som HTML-versionen använder. Bo har skrivit följande i GeoGebra:</p>
+
+<p><img src='./bilder/bossegeoinput.png' /></p>
+
+<p>Funktionen <code>\acute</code> som Bo har använt för att få till &#8220;prim&#8221;-markeringen av derivatan stöds inte av MathQuill. När jag istället ändrar till att skriva in primtecknet direkt:</p>
+
+<p><img src='./bilder/bossegeoinput_fixed.png' /></p>
+
+<p>&#8230;så fungerar det även i HTML-exporten. För den nyfikne så finns exporten med den &#8220;felaktiga&#8221; koden <a href="http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata.html">här</a>, och den fixade exporten <a href="http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata_fixed.html">här</a>.</p>
+
+<p>Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoGebra stöder tror jag är den största faran när labbarna skall exporteras. Nu bör förmodligen varje labb kontrolleras efter export ändå, men jag har satt ihop en liten <a href="mathquill_sandbox.html">testsandlåda</a> där Bo och hans kumpaner enkelt kan testa om MathQuill (samma äldre version som GeoGebraWeb använder) kan rendera ett givet LaTeX-uttryck.</p>
+
+<p><img src='./bilder/sandbox.png' /></p>
+
+<p>Om ingen rendering dyker upp nedanför textfältet, eller om renderingen är felaktig, så betyder det att MathQuill har problem med det givna uttrycket och att LaTeX-koden i GeoGebralabben därmed bör omformuleras. Min gissning är dock att det sällan kommer innebära några problem, då MathQuill ändå innehåller alla grundläggande funktioner. Mest kommer det förmodligen handla om mer eller mindre kosmetiska kodändringar, i stil med den jag fick genomföra för att fixa derivatalaborationen ovan.</p>
+
+<h3 id="nbspnbspnbspnrbildavdengenereradeappleten">2.4 &nbsp;&nbsp;&nbsp; Närbild av den genererade appleten</h3>
+
+<p>Låt oss titta närmare på vad som faktiskt genereras inne i article-elementet! Så här ser det ut i en web inspector efter att all kod exekverats och GeoGebraWeb har initierat appleten:</p>
+
+<p><img src='./bilder/generatedcode.png' /></p>
+
+<p>Detta är intressant - vi ser här att den genererade webappen innehåller både ett canvas-element samt fristående DOM-noder. Vad är det då som ritas i canvas-elementet? Följande bildpar ämnar demonstrera detta. Här först en skärmdump från en av de exporterade labbarna:</p>
+
+<p><img src='./bilder/dissection-with.png' /></p>
+
+<p>Nu ännu en skärmdump från samma labb, men där jag programmatiskt har dolt canvas-elementet:</p>
+
+<p><img src='./bilder/dissection-without.png' /></p>
+
+<p>Vi ser att det endast är de fristående texterna som ligger i DOM:en. Allt annat ritas upp i canvas-elementet. Detta är inte bara en teknisk parentes; element som finns i DOM:en kan vi interagera med, stila med CSS-mallar, etc. Men canvas-elementet fungerar i det avseendet precis som en vanlig bild - vi har ingen möjlighet att påverka dess innehåll med CSS (däremot finns ett programmatiskt API, se nedan). </p>
+
+<h3 id="nbspnbspnbspprogrammatisktinterfacemothtml-applet">2.5 &nbsp;&nbsp;&nbsp; Programmatiskt interface mot HTML-applet</h3>
+
+<p>När appleten genereras i HTML-dokumentet så skapas en global variabel <code>ggbApplet</code>, som exponerar en lång rad metoder.</p>
+
+<p><img src='./bilder/ggbapplet.png' /></p>
+
+<p>Den fullständiga (?) listan över dessa metoder finns <a href="http://wiki.geogebra.org/en/Reference:JavaScript">här</a>. Det finns också en <a href="http://wiki.geogebra.org/en/Manual:Scripting">manual</a> för att scripta applets med JavaScript.</p>
+
+<p>Detta objekt gör det möjligt att interagera med appleten från JavaScriptkod. Jag har skapat <a href="http://krawaller.github.com/gleerups/export/323_Tangent_hackad.html">en liten demonstration</a> där jag hackat en av labbarna så att den kan påverkas med yttre JavaScriptkontroller:</p>
+
+<p><img src='./bilder/hackad.png' /></p>
+
+<p>När siffran i det första input-fältet under labben ändras så kommer slider d i labben uppdateras till samma värde. Knappen längst ned omdefinierar den röda linjen till att bli vinkelrät mot tangenten istället. Ytterligare ett knapptryck återställer den upsprungliga definitionen. Vi kan också ändra linjernas tjocklek, och dölja/visa stödlinjerna i bakgrunden. Slutligen uppdateras texten längst ned när slider b ändras i appen.</p>
+
+<p>Dessa hack är valda för att demonstrera några viktiga poänger vad gäller programmatisk interaktion från JavaScriptrymden.</p>
+
+<h4 id="nbspnbspnbspkommunikationjavascriptrarrapplet">2.5.1 &nbsp;&nbsp;&nbsp; Kommunikation JavaScript &rarr; applet</h4>
+
+<p>Låt oss först titta på koden för att uppdatera slidern. Den är tämligen enkel; en funktion som lyssnar på förändringar i värdet på input-fältet anropar <code>setValue</code> på <code>ggbApplet</code>-objektet:</p>
+
+<p><img src='./bilder/updateslide.png' /></p>
+
+<p>Notera att det första argumentet till funktionen är GeoGebra-namnet på objektet jag vill förändra. Här kommer den första poängen: <em>vill jag interagera med ett objekt så måste jag därmed först veta vilket namn objektet har i den ursprungliga .ggb-filen.</em> Det borde dock sällan vara ett problem.</p>
+
+<p>Koden för att vända på den röda linjen använder metoden <code>evalCommand</code>, som var den andra saken jag ville demonstrera. Den tar emot commands så som de är definierade i GeoGebra, dokumentation finns <a href="http://wiki.geogebra.org/en/Category:Commands">här</a>.</p>
+
+<p><img src='./bilder/flipline.png' /></p>
+
+<p>När vi först gör om linjen till att vara vinkelrät istället så körs kommandot <code>e: PerpendicularLine(A,Tangent(A,f))</code>. Här kan följande iakttagelser göras:</p>
+
+<ul>
+<li>&#8220;e&#8221; är namnet på den röda linjen. Inledningen med namn och kolon betyder att en omdefinition följer.</li>
+<li>Konstruktorn PerpendicularLine tar här emot två parametrar, en punkt och en linje.</li>
+<li>Den linje jag vill att den skall vara vinkelrät mot är linjens nuvarande definition, men jag kan inte hänvisa till mig själv! Därför skapar jag en anonym linje genom att skicka in en konstruktor (tangenten av punkten A och funktionen f) istället för en befintlig linje.</li>
+<li>När linjen skall återställas så skickas tangentdefinitionen in igen.</li>
+</ul>
+
+<p>Metoden <code>evalCommand</code> är som synes väldigt kraftfull, och kommer säkerligen figurera i många sammanhang när yttre interaktion skall skapas. </p>
+
+<p>Ytterligare några iakttagelser jag gjort under experimenterande med detta:</p>
+
+<ul>
+<li>Objektens <code>fixed</code>-status spelar samma roll här som i GeoGebra. Därför måste de eventuellt först göras &#8220;ofixade&#8221; innan de kan manipuleras, med hjälp av metoden <code>.setFixed(objname,true/false)</code>.</li>
+<li>Att ändra färg verkar av någon anledning väldigt opålitligt. Jag har inte hittat någon annan funktionalitet som konsekvent inte fungerar, men finns det en så kan det såklart finnas flera.</li>
+</ul>
+
+<h4 id="nbspnbspnbspkommunikationjavascriptrarrapplet">2.5.2 &nbsp;&nbsp;&nbsp; Kommunikation JavaScript &rarr; applet</h4>
+
+<p>Ovan har jag demonstrerat ett antal sätt som vi via förändringar i JavaScriptrymden kan påverka innehållet i labben. Men vi kan också vilja reagera i JavaScriptrymden på förändringar som sker i labben, det vill säga kommunikation åt andra hållet! I den hackade labben så finns ett exempel på det, nämligen texten i dokumentet som uppdateras när slider b i labben ändras. Låt oss kika närmare på källkoden för detta:</p>
+
+<p><img src="./bilder/actonappchange.png" /></p>
+
+<p>Funktionen <code>updateMsg</code> är den som kommer köras varje gång slidern ändras. Dess enda uppgift är att uppdatera textfältets innehåll. För att göra det måste den komma åt sliderns nya värde, vilket den enkelt gör via <code>ggbApplet.getValue</code>.</p>
+
+<p>Själva ihopkopplingen mellan funktionen och slidern görs via ett anrop till <code>ggbApplet.registerObjectUpdateListener</code>. Vi skickar in två argument; namnet på objektet vars förändringar vi vill reagera på, och sedan <em>en textsträng</em> som innehåller namnet på den globala funktion vi vill skall exekveras vid förändring. Notera att vi inte kan skicka in funktionen direkt! Detta är ett märkligt val vid designen av API:t, som uppmuntrar till dålig kod. Men, bara att gilla läget.</p>
+
+<p>En sista iakttagelse är att vi inte kan anropa <code>registerObjectUpdateListener</code> direkt, eftersom det tar tid för appen att initieras. Innan den har initierats så existerar inte objektet <code>ggbApplet</code>! Lösningen är att skapa en funktion med det magiska namnet <code>ggbOnInit</code>, vilken GeoGebra kommer anropa när appen är redo. I den funktionen kan vi tryggt göra vårt anrop till <code>registerObjectUpdateListener</code>.</p>
+
+<h4 id="nbspnbspnbspkommunikationmellantvapplets">2.5.3 &nbsp;&nbsp;&nbsp; Kommunikation mellan två applets</h4>
+
+<p>Jag har redan tidigare demonstrerat ett <a href="http://krawaller.github.com/gleerups/export/applets.html">exempel</a> på ett html-dokument som innehåller två applets samtidigt. Låt oss nu titta på hur vi skulle kunna få två applets att &#8220;prata&#8221; med varandra! <a href="http://krawaller.github.com/gleerups/export/davidskombo.html">Här</a> har jag skapat ett exempel med två enkla labbar; den ena innehåller en cirkel, den andra en stråle:</p>
+
+<p><img src="./bilder/kombo.png" /></p>
+
+<p>Notera att punkterna A och B sammanfaller i de båda labbarna. Flyttas någon av dem i den ena, så sker motsvarande förändring i den andra.</p>
+
+<p>Första frågan att knäcka var detta: hur kommer vi åt dessa applets från JavaScriptkoden? Vi har tidigare sett att objektet <code>ggbApplet</code> skapas globalt, men nu behöver vi ju två objekt! Snokar vi i det förra exemplet så kommer vi upptäcka att objektet <code>ggbApplet</code> innehåller den andra av de två appletsen. Vi kan alltså inte komma åt den första!</p>
+
+<p>Lösningen är att använda attributet <code>data-param-id</code>, som anger namnet på det globala objekt som skapas för att representera den aktuella appleten. Så här ser den relevanta html-koden ut:</p>
+
+<p><img src="./bilder/kombonamn.png" /></p>
+
+<p>I detta dokument kan jag sedan interagera med respektive applet via objekten <code>circleapp</code> och <code>rayapp</code>.</p>
+
+<p>Koden för att få cirkeln att ändra sig när strålen uppdaterats och vice versa är också värd en titt, eftersom jag tvingades lösa lite knutar som ni också skulle kunna stöta på:</p>
+
+<p><img src="./bilder/kombotalk.png" /></p>
+
+<p>Betrakta först funktionen <code>ggbOnInit</code> längst ned. Den exekveras <em>varje gång</em> en applet är initierad. Jag måste därför ha en räknare för att kunna köra min kod först när båda appleterna är redo. I denna funktion så använder jag sedan <code>registerObjectUpdateListener</code> för att koppla en funktion till när cirkeln uppdateras (både punkt A och B), och en när strålen uppdateras (även här för båda punkterna).</p>
+
+<p>I dessa uppdateringsfunktioner så ändrar jag sedan punkterna i den andra appleten. Men eftersom denna förändring kommer trigga den andra appletens lyssnarfunktion så riskerar jag här att skapa en oändlig anropskedja! Det är därför jag har flaggan <code>dragging</code>, som kollar om nuvarande förändring är resultat av att den andra appleten uppdateras just nu, och i så fall så görs ingen kommunikation.</p>
+
+<p>Notera att denna flagga är satt till <code>true</code> redan i definitionen (översta raden), och sedan blir sänkt när initieringen är klar (sista raden). Detta är för att lyssnarfunktionerna inte skall exekveras när punkterna först ritas ut (lite oklart om så är fallet, dokumentationen är tvetydig och mitt experimenterande likaså, so better safe than sorry).</p>
+
+<p>Sista pusselbiten är funktionen <code>checkDrag</code>, som med 50 millisekunders intervall kollar om punkten fortfarande dras. Om så är fallet så är flaggan fortfarande sann, och en ny kontroll görs om 50 millisekunder igen. Annars sätts flaggan till falskt, och koden är redo för nästa manipulering.</p>
+
+<p>Rent teoretiskt borde jag inte behöva en timer för detta, utan varje lyssnarfunktion skulle överst kunna sätta flaggan till sant, och sedan längst ned till falskt. Det visade sig dock att när så är fallet så kommer inte appleten vars punkt jag flyttar att ritas om förrän jag släpper punkten. Däremot ritas den andra appleten om kontinuerligt, vilket såg ganska lustigt ut. När jag sedan släpper punkten så dök den upp på rätt plats. Dock, med flaggförängingen i en timer, så uppdateras båda appletsen korrekt kontinuerligt.</p>
+
+<p>En parentes; prestandamässigt är jag lite brutal i koden ovan, då jag alltid uppdaterar både punkt A och B, trots att det givetvis bara är en som flyttas i taget. Det gjorde jag enbart för att hålla koden enkel, men i skarpt läge skulle man behöva ha två lyssnare på varje applet, en för varje punkt.</p>
+
+<h4 id="nbspnbspnbspsammanfattningavkommunikationen">2.5.4 &nbsp;&nbsp;&nbsp; Sammanfattning av kommunikationen</h4>
+
+<p>Avslutningsvis kan vi konstatera att det finns goda möjligheter att påverka de exporterade labbarna från en JavaScriptkontext, de är inte alls den svarta låda jag först trodde. Det gör bland annat att man kan välja att definiera kontroller (typ sliders och checkboxes) till labbarna i själva geogebrafilen, eller skapa dem i HTML-dokumentet. Det sistnämnda innebär ett litet merarbete, men ger större möjligheter att stila och anpassa.</p>
+
+<p>Kommunikation mellan två labbar på samma sida var något som jag tänkt framhålla som en fördel med en ren webblösning, men som sågs ovan så är det fullt genomförbart även mellan två GeoGebra-applets. Även om det inte var fullt så smidigt som det skulle kunna vara så är det fullt hanterbart.</p>
+
+<h2 id="nbspnbspnbspresultat">3 &nbsp;&nbsp;&nbsp; Resultat</h2>
+
+<p>Jag gick som sagt in i arbetet med fördomen att GeoGebraWeb inte är en mogen lösning, och att denna min undersökning kommer demonstrera det fördelaktiga i att omarbeta laborationerna i rena webbtekniker.</p>
+
+<p>Trots att det är den väg jag själv brinner för, så kan jag efter den genomförda undersökningen inte med gott samvete rekommendera den lösningen. GeoGebraWeb är en imponerande produkt, och en fullgod lösning för att kunna nyttja ert befintliga .ggb-material istället för att omskapa dessa i webbtekniker. Vissa vassa hörn finns, som synes, men inte så vassa att de avskräcker.</p>
+
+<p>Enkelheten med integrering i en kontext var vad jag tänkt framhålla som den stora fördelen med en ren webblösning. Därför lade jag extra mycket krut på att undersöka GeoGebraWeb-appens möjlighet till kommunikation med omvärlden, som visade sig vara långt ifrån så begränsad som jag trodde. </p>
+
+<p>Eftersom GeoGebraWeb visade sig vara så kompetent så har jag inte inkluderat den utlovade jämförelsen med en ren HTML-labb. Om ni idag stått på ruta 1, utan befintligt material och utan GeoGebrakunskaper bland personalen, då skulle jag fortfarande argumentera för en ren webblösning. Men då ni redan har ett stort materialkapital, och personal som är väldigt bekväma i GeoGebra, då är GeoGebraWeb den självklara lösningen. Tyvärr. :)</p>
+
+<p>Istället för den brandskrift för en webblösning som jag trott det skulle bli, så hoppas jag att rapporten kan tjäna som utgångspunkt för ert arbete med att börja använda GeoGebraWeb. Jag har avsiktligt lagt tid på just de initiala frågetecken som kostade mig energi, och/eller som inte blir tydligt uträtade i den officiella dokumentationen.</p>
+
+<h3 id="nbspnbspnbspterstendefrgetecken">3.1 &nbsp;&nbsp;&nbsp; Återstående frågetecken</h3>
+
+<p>En sak jag inte hunnit undersöka närmre, men som jag anar sorterar under rubriken &#8220;vassa hörn&#8221;, är att dimensionssätta &amp; skala de exporterade labbarna. Här måste förmodligen ytterligare experimentering göras innan man sätter sig och massexporterar labbar.</p>
+
+<h2 id="nbspnbspnbspettlitetps:animeradgif">4 &nbsp;&nbsp;&nbsp; Ett litet PS: animerad GIF</h2>
+
+<p>Vid inklusion av enklare labbar i en digital kontext så skulle också animerad GIF kunna vara ett exporeringsalternativ. Animationen skapas utifrån en slider, så de labbar som bäst lämpar sig för detta format är de som innehåller (eller kan skrivas om till att innehålla) exakt 1 slider. </p>
+
+<p>Här är ett exempel där jag manipulerat laborationen om enhetscirkeln så att vinkeln bestäms utifrån en slider, som sedan fått definiera animationen (vid en seriös export till gif skulle man såklart också ta bort checkboxes och dylikt):</p>
+
+<p><img src='./export/353_Enhetscirkeln.gif' /></p>
+
+<p>Interaktiviteten är förlorad, men laborationen är nu reducerad till en enda .gif-fil som därmed är väldigt lätt att hantera. Det bör dock noteras att bildernas storlek inte är trivial; detta exempel är nästan exakt 2MB stort.</p>
+
+</div></body></html>

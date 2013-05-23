@@ -20,12 +20,11 @@ Det är denna exporteringsfunktion, GeoGebraWeb, som undersöks i denna rapport.
 
 ## 2 &nbsp;&nbsp;&nbsp; Undersökning
 
-report report report
-
+Här följer nu en djupdykning i resultatet av att exportera en labb till html-kod. Djupdykningen är gjord med baktanke att undersöka om funktionaliteten kan mäta sig med en "ren" webblösning. Min förutfattade mening (som kom på skam) var att så inte är fallet.
 
 ### 2.1 &nbsp;&nbsp;&nbsp; Närbild av den exporterade html-koden i en applet
 
-Bla bla. Så, vad exporteras egentligen från GeoGebra? Se här:
+Låt oss först titta närmare på vad GeoGebra faktiskt spottar ur sig när man väljer att exportera en .ggb-fil till HTML:
 
 <img src='./bilder/geogebraweb-export.png' />
 
@@ -42,7 +41,7 @@ Notera att när exempelfilen renderas så kan det hända att labbarna initialt �
 
 ### 2.2 &nbsp;&nbsp;&nbsp; Förutsättningar för att köra GeoGebraWeb utan yttre beroenden
 
-Den exporterade appleten hänvisar, som vi såg ovan, till kod på GeoGebras servrar. Hur gör man då för att använda den exporterade koden i offlineläge eller självständigt på egna servrar?
+Den exporterade appleten hänvisar, som vi såg ovan, till kod på GeoGebras servrar. Hur gör man då för att använda den exporterade koden i offlineläge eller självständigt på egna servrar (så som jag gjorde i applet-exemplet)?
 
 Steg ett är att man laddar ner GeogebraWeb-paketet, vilket finns att tillgå [här](http://dev.geogebra.org/download/web/GeoGebraWeb-latest.zip). Det är ett ganska tungt paket; 212 filer, 55 megabyte. Här är en snabb översikt över innehållet:
 
@@ -54,32 +53,26 @@ Gissningsvis kan man raka bort en del av detta, men förmodligen inte utan att f
 
 ### 2.3 &nbsp;&nbsp;&nbsp; Jämförelse mellan Geogebralabb och den exporerade HTML-versionen
 
-Trogen! Bla bla bla. Renderingen! Här först GeoGebra:
+Förlorar HTML-versionen någon funktionalitet i exporteringen, eller är den likvärdig med sin ursprungliga .ggb-förfäder? Efter hyfsat omfattande påläsning och experimenterande så verkar det som att den faktiskt är imponerande trogen.
+
+Låt oss titta på ett exempel! Här kommer en skärmdump från en av labbarna, så som den ser ut i GeoGebra:
 
 <img src='./bilder/comparison-geogebra.png' style='border: 1px solid black; max-height: 60%; max-width: 60%;' />
 
-Samma labb i HTML:
+Här har vi samma labb i HTML-format:
 
 <img src='./bilder/comparison-html.png' style='border: 1px solid black; max-height: 60%; max-width: 60%;' />
 
-Som synes är HTML-versionen ganska lik, om än inte helt identisk. Exempelvis matematiska uttryck ser lite annorlunda ut, vilket beror på att de i Geogebra renderas internt, medan de i HTML-versionen använder JavaScript-biblioteket [MathQuill](http://www.mathquill.com).
-
-#### 2.3.1 &nbsp;&nbsp;&nbsp; Funktionalitet
-
-Väldigt mycket är gjort, men det finns en del saker som fortfarande saknas i GeoGebraWeb. Det handlar dock mest om vyer, vilket förmodligen inte påverkar labbarnas användbarhet.
+Som synes är HTML-versionen ganska lik, om än inte helt identisk. Exempelvis matematiska uttryck ser lite annorlunda ut, vilket beror på att de i Geogebra renderas internt medan de i HTML-versionen använder JavaScript-biblioteket [MathQuill](http://www.mathquill.com). Positionering av vissa etiketter är inte heller 100%:igt överensstämmande, men ändå så nära att man måste leta efter skillnaderna.
 
 
 #### 2.3.2 &nbsp;&nbsp;&nbsp; Tillförlitlighet
 
-Funktionaliteten verkar överlag översättas utan problematik till webbformat. Jag är imponerad!
-
-Den enda luckan jag hittat hittills syns i bildjämförelsen ovan. Notera i den första bilden, från Geogebra, att uträkningen för derivatan syns längst upp till höger.
+Funktionaliteten verkar överlag översättas utan problematik till webbformat. Jag är imponerad! Den enda luckan jag hittat hittills syns i bildjämförelsen ovan. Notera i den första bilden, från Geogebra, att uträkningen för derivatan syns längst upp till höger.
 
 <img src='./bilder/derivata.png' />
 
-I bilden från HTML-exporten syns bara texten "Derivata:", men själva uträkningen saknas!
-
-Det beror på att Bo har använt ett LaTeX-uttryck som inte stöds av den renderare som HTML-versionen använder, nämligen MathQuill. Bo har skrivit följande:
+I bilden från HTML-exporten syns bara texten "Derivata:", men själva uträkningen saknas! Det beror på att Bo har använt ett LaTeX-uttryck som inte stöds av den renderare (MathQuill) som HTML-versionen använder. Bo har skrivit följande i GeoGebra:
 
 <img src='./bilder/bossegeoinput.png' />
 
@@ -87,9 +80,9 @@ Funktionen `\acute` som Bo har använt för att få till "prim"-markeringen av d
 
 <img src='./bilder/bossegeoinput_fixed.png' />
 
-...så fungerar det även i HTML-exporten. For completion's sake så finns exporten med den "felaktiga" koden [här](http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata.html), och den fixade exporten [här](http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata_fixed.html).
+...så fungerar det även i HTML-exporten. För den nyfikne så finns exporten med den "felaktiga" koden [här](http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata.html), och den fixade exporten [här](http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata_fixed.html).
 
-Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoGebra stöder tror jag är den största faran när labbarna skall exporteras. Nu bör förmodligen varje labb kontrolleras efter export ändå, men jag har satt ihop en liten [testsandlåda](mathquill_sandbox.html) där Bo och hans kumpaner enkelt kan testa om MathQuill kan rendera ett givet LaTeX-uttryck.
+Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoGebra stöder tror jag är den största faran när labbarna skall exporteras. Nu bör förmodligen varje labb kontrolleras efter export ändå, men jag har satt ihop en liten [testsandlåda](mathquill_sandbox.html) där Bo och hans kumpaner enkelt kan testa om MathQuill (samma äldre version som GeoGebraWeb använder) kan rendera ett givet LaTeX-uttryck.
 
 <img src='./bilder/sandbox.png' style='border: 1px solid black;' />
 
@@ -98,7 +91,7 @@ Om ingen rendering dyker upp nedanför textfältet, eller om renderingen är fel
 
 ### 2.4 &nbsp;&nbsp;&nbsp; Närbild av den genererade appleten
 
-Låt oss titta närmare på vad som faktiskt genereras inne i article-elementet! Så här ser det ut i en web inspector efter att koden exekverats:
+Låt oss titta närmare på vad som faktiskt genereras inne i article-elementet! Så här ser det ut i en web inspector efter att all kod exekverats och GeoGebraWeb har initierat appleten:
 
 <img src='./bilder/generatedcode.png' />
 
@@ -196,15 +189,34 @@ Notera att denna flagga är satt till `true` redan i definitionen (översta rade
 
 Sista pusselbiten är funktionen `checkDrag`, som med 50 millisekunders intervall kollar om punkten fortfarande dras. Om så är fallet så är flaggan fortfarande sann, och en ny kontroll görs om 50 millisekunder igen. Annars sätts flaggan till falskt, och koden är redo för nästa manipulering.
 
+Rent teoretiskt borde jag inte behöva en timer för detta, utan varje lyssnarfunktion skulle överst kunna sätta flaggan till sant, och sedan längst ned till falskt. Det visade sig dock att när så är fallet så kommer inte appleten vars punkt jag flyttar att ritas om förrän jag släpper punkten. Däremot ritas den andra appleten om kontinuerligt, vilket såg ganska lustigt ut. När jag sedan släpper punkten så dök den upp på rätt plats. Dock, med flaggförängingen i en timer, så uppdateras båda appletsen korrekt kontinuerligt.
+
 En parentes; prestandamässigt är jag lite brutal i koden ovan, då jag alltid uppdaterar både punkt A och B, trots att det givetvis bara är en som flyttas i taget. Det gjorde jag enbart för att hålla koden enkel, men i skarpt läge skulle man behöva ha två lyssnare på varje applet, en för varje punkt.
 
 #### 2.5.4 &nbsp;&nbsp;&nbsp; Sammanfattning av kommunikationen
 
-Avslutningsvis kan vi konstatera att det finns goda möjligheter att påverka de exporterade labbarna från en JavaScriptkontext, de är inte alls den svarta låda jag först trodde. Det gör att man kan välja att definiera kontroller (typ sliders och checkboxes) till labbarna i själva geogebrafilen, eller skapa dem i HTML-dokumentet. Det sistnämnda innebär ett litet merarbete, men ger större möjligheter att stila och anpassa.
+Avslutningsvis kan vi konstatera att det finns goda möjligheter att påverka de exporterade labbarna från en JavaScriptkontext, de är inte alls den svarta låda jag först trodde. Det gör bland annat att man kan välja att definiera kontroller (typ sliders och checkboxes) till labbarna i själva geogebrafilen, eller skapa dem i HTML-dokumentet. Det sistnämnda innebär ett litet merarbete, men ger större möjligheter att stila och anpassa.
 
 Kommunikation mellan två labbar på samma sida var något som jag tänkt framhålla som en fördel med en ren webblösning, men som sågs ovan så är det fullt genomförbart även mellan två GeoGebra-applets. Även om det inte var fullt så smidigt som det skulle kunna vara så är det fullt hanterbart.
 
-### Animerad GIF
+## 3 &nbsp;&nbsp;&nbsp; Resultat
+
+Jag gick som sagt in i arbetet med fördomen att GeoGebraWeb inte är en mogen lösning, och att denna min undersökning kommer demonstrera det fördelaktiga i att omarbeta laborationerna i rena webbtekniker.
+
+Trots att det är den väg jag själv brinner för, så kan jag efter den genomförda undersökningen inte med gott samvete rekommendera den lösningen. GeoGebraWeb är en imponerande produkt, och en fullgod lösning för att kunna nyttja ert befintliga .ggb-material istället för att omskapa dessa i webbtekniker. Vissa vassa hörn finns, som synes, men inte så vassa att de avskräcker.
+
+Enkelheten med integrering i en kontext var vad jag tänkt framhålla som den stora fördelen med en ren webblösning. Därför lade jag extra mycket krut på att undersöka GeoGebraWeb-appens möjlighet till kommunikation med omvärlden, som visade sig vara långt ifrån så begränsad som jag trodde. 
+
+Eftersom GeoGebraWeb visade sig vara så kompetent så har jag inte inkluderat den utlovade jämförelsen med en ren HTML-labb. Om ni idag stått på ruta 1, utan befintligt material och utan GeoGebrakunskaper bland personalen, då skulle jag fortfarande argumentera för en ren webblösning. Men då ni redan har ett stort materialkapital, och personal som är väldigt bekväma i GeoGebra, då är GeoGebraWeb den självklara lösningen. Tyvärr. :)
+
+Istället för den brandskrift för en webblösning som jag trott det skulle bli, så hoppas jag att rapporten kan tjäna som utgångspunkt för ert arbete med att börja använda GeoGebraWeb. Jag har avsiktligt lagt tid på just de initiala frågetecken som kostade mig energi, och/eller som inte blir tydligt uträtade i den officiella dokumentationen.
+
+### 3.1 &nbsp;&nbsp;&nbsp; Återstående frågetecken
+
+En sak jag inte hunnit undersöka närmre, men som jag anar sorterar under rubriken "vassa hörn", är att dimensionssätta &amp; skala de exporterade labbarna. Här måste förmodligen ytterligare experimentering göras innan man sätter sig och massexporterar labbar.
+
+
+## 4 &nbsp;&nbsp;&nbsp; Ett litet PS: animerad GIF
 
 Vid inklusion av enklare labbar i en digital kontext så skulle också animerad GIF kunna vara ett exporeringsalternativ. Animationen skapas utifrån en slider, så de labbar som bäst lämpar sig för detta format är de som innehåller (eller kan skrivas om till att innehålla) exakt 1 slider. 
 
