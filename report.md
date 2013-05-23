@@ -30,24 +30,32 @@ Yada yada. Primära resurser för undersökningen:
 *    [Devsida](http://dev.geogebra.org/trac/wiki/GeoGebraWeb)
 
 
-Bla bla. [Ladda ner paketet](http://dev.geogebra.org/download/web/GeoGebraWeb-latest.zip)! "These are not intended for end users"
+### Närbild av den exporterade html-koden i en applet
 
-Tungvikt. 212 filer, 55 megabyte. En översikt över innehållet:
-
-<img src='./bilder/geogebraweb-content.png' />
-
-Bla bla. Så, vad returneras? Se här:
+Bla bla. Så, vad exporteras egentligen från GeoGebra? Se här:
 
 <img src='./bilder/geogebraweb-export.png' />
 
-För att extrahera en labbmodul ur det exporerade html-dokumentet krävs lite enkel handpåläggning. Själva appleten ryms i article-elementet. Denna är 'självförsörjande', och kan kopieras och integreras i ett annat html-dokument. Enda förutsättningen är att detta html-dokument laddar in filen `web.nocache.js` från GeoGebraWeb.
+Resultatet blir alltid en "fullständig" html-fil, med både head- och body-tagg. Denna fil fungerar nu som vad GeoGebra kallar för en **app**, det vill säga ett html-dokument som inte består av något annat än den exporterade GeoGebra filen.
 
-Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras. Exemplet ligger också live [här](http://krawaller.github.com/gleerups/export/applets.html).
+För att åstadkomma ett fristående kodblock ur detta (vad GeoGebra kallar **applet**) som man sedan kan lägga in i ett annat html-dokument krävs lite enkel handpåläggning. Själva appleten ryms i article-elementet. Denna är 'självförsörjande', och kan kopieras och integreras i ett annat html-dokument. Enda förutsättningen är att detta html-dokument laddar in filen `web.nocache.js` från GeoGebraWeb.
+
+Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras samtidigt, tillsammans med annat html-innehåll. Exemplet ligger också live [här](http://krawaller.github.com/gleerups/export/applets.html).
 
 <img src='./bilder/geogebraweb-composite.png' />
 
-Notera att i exempelfilen så kan det hända att labbarna initialt är väldigt små, men sedan får sin rätta storlek när innehållet laddats. Detta gör då att övrigt innehåll på sidan förskjuts, vilket kan se oprofessionellt ut. Det är bland annat för att förhindra denna effekt som den ursprungliga exporteringen nästlade article-elementet i en tabell med given storlek, så om man vill säkerställa att ingen förskjutning sker så kan man helt enkelt behålla tabellen från exporteringen.
+Notera att när exempelfilen renderas så kan det hända att labbarna initialt är väldigt små, men sedan får sin rätta storlek när innehållet laddats. Detta gör då att övrigt innehåll på sidan förskjuts, vilket kan se oprofessionellt ut. Det är bland annat för att förhindra denna effekt som den ursprungliga exporteringen nästlade article-elementet i en tabell med given storlek, så om man vill säkerställa att ingen förskjutning sker så kan man helt enkelt behålla tabellen från exporteringen.
 
+
+### Förutsättningar för att köra GeoGebraWeb utan yttre beroenden
+
+Själva GeoGebraWeb Bla bla. [Ladda ner paketet](http://dev.geogebra.org/download/web/GeoGebraWeb-latest.zip)! "These are not intended for end users"
+
+Tungvikt. 212 filer, 55 megabyte. En översikt över innehållet i paketet:
+
+<img src='./bilder/geogebraweb-content.png' />
+
+Gissningsvis kan man raka bort en del av detta, men förmodligen inte utan att för varje applet kontrollera att ingenting gått sönder. Med andra ord får man nog räkna med att adoptera in hela detta paket i sin webblösning om man vill ha "självständiga" applets som inte behöver hämta filer från Geogebras server.
 
 
 
@@ -95,7 +103,7 @@ Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoG
 Om ingen rendering dyker upp nedanför textfältet, eller om renderingen är felaktig, så betyder det att MathQuill har problem med det givna uttrycket och att LaTeX-koden i GeoGebralabben därmed bör omformuleras. Min gissning är dock att det sällan kommer innebära några problem, då MathQuill ändå innehåller alla grundläggande funktioner. Mest kommer det förmodligen handla om mer eller mindre kosmetiska kodändringar, i stil med den jag fick genomföra för att fixa derivatalaborationen ovan.
 
 
-#### Beståndsdelar
+#### Närbild av den genererade appleten
 
 Låt oss titta närmare på vad som faktiskt genereras inne i article-elementet! Så här ser det ut i en web inspector efter att koden exekverats:
 
@@ -112,11 +120,53 @@ Nu ännu en skärmdump från samma labb, men där jag programmatiskt har dolt ca
 Vi ser att det endast är de fristående texterna som ligger i DOM:en. Allt annat ritas upp i canvas-elementet. Detta är inte bara en teknisk parentes; element som finns i DOM:en kan vi interagera med, stila med CSS-mallar, etc. Men canvas-elementet fungerar i det avseendet precis som en vanlig bild - vi har ingen möjlighet att påverka dess innehåll. 
 
 
+#### Programmatisk åtkomst till appleten med JavaScript
+
+När appleten genereras i HTML-dokumentet så skapas en global variabel `ggbApplet`, som exponerar en lång rad metoder.
+
+<img src='./bilder/ggbapplet.png' />
+
+Den fullständiga (?) listan över dessa metoder finns [här](http://wiki.geogebra.org/en/Reference:JavaScript). Det finns också en [manual](http://wiki.geogebra.org/en/Manual:Scripting) för att scripta applets med JavaScript.
+
+Detta objekt gör det möjligt att interagera med appleten från JavaScriptkod. Jag har skapat [en liten demonstration](http://krawaller.github.com/gleerups/export/323_Tangent_hackad.html) där jag hackat en av labbarna så att den kan påverkas med yttre JavaScriptkontroller:
+
+<img src='./bilder/hackad.png' />
+
+När siffran i det första input-fältet under labben ändras så kommer slider d i labben uppdateras till samma värde. Knappen längst ned omdefinierar den röda linjen till att bli vinkelrät mot tangenten istället. Ytterligare ett knapptryck återställer den upsprungliga definitionen. Vi kan också ändra linjernas tjocklek, och dölja/visa stödlinjerna i bakgrunden.
+
+Dessa hack är valda för att demonstrera två viktiga poänger vad gäller programmatisk interaktion från JavaScriptrymden.
+
+Låt oss först titta på koden för att uppdatera slidern. Den är tämligen enkel; en funktion som lyssnar på förändringar i värdet på input-fältet anropar `setValue` på `ggbApplet`-objektet:
+
+<img src='./bilder/updateslide.png' />
+
+Notera att det första argumentet till funktionen är GeoGebra-namnet på objektet jag vill förändra. Här kommer den första poängen: _vill jag interagera med ett objekt så måste jag därmed först veta vilket namn objektet har i den ursprungliga .ggb-filen._ Det borde dock sällan vara ett problem.
+
+Koden för att vända på den röda linjen använder metoden `evalCommand`, som var den andra saken jag ville demonstrera. Den tar emot commands så som de är definierade i GeoGebra, dokumentation finns [här](http://wiki.geogebra.org/en/Category:Commands).
+
+<img src='./bilder/flipline.png' />
+
+När vi först gör om linjen till att vara vinkelrät istället så körs kommandot `e: PerpendicularLine(A,Tangent(A,f))`. Här kan följande iakttagelser göras:
+
+*    "e" är namnet på den röda linjen. Inledningen med namn och kolon betyder att en omdefinition följer.
+*    Konstruktorn PerpendicularLine tar här emot två parametrar, en punkt och en linje.
+*    Den linje jag vill att den skall vara vinkelrät mot är linjens nuvarande definition, men jag kan inte hänvisa till mig själv! Därför skapar jag en anonym linje genom att skicka in en konstruktor (tangenten av punkten A och funktionen f) istället för en befintlig linje.
+*    När linjen skall återställas så skickas tangentdefinitionen in igen.
+
+Metoden `evalCommand` är som synes väldigt kraftfull, och kommer säkerligen figurera i många sammanhang när yttre interaktion skall skapas. 
+
+Ytterligare några iakttagelser jag gjort under experimenterande med detta:
+
+*    Objektens `fixed`-status spelar samma roll här som i GeoGebra. Därför måste de eventuellt först göras "ofixade" innan de kan manipuleras, med hjälp av metoden `.setFixed(objname,true/false)`.
+*    Att ändra färg
+
+
+
 ### Animerad GIF
 
 Vid inklusion av enklare labbar i en digital kontext så skulle också animerad GIF kunna vara ett exporeringsalternativ. Animationen skapas utifrån en slider, så de labbar som bäst lämpar sig för detta format är de som innehåller (eller kan skrivas om till att innehålla) exakt 1 slider. 
 
-Här är ett exempel där jag manipulerat laborationen om enhetscirkeln så att vinkeln bestäms utifrån en slider, som sedan fått definiera animationen:
+Här är ett exempel där jag manipulerat laborationen om enhetscirkeln så att vinkeln bestäms utifrån en slider, som sedan fått definiera animationen (vid en seriös export till gif skulle man såklart också ta bort checkboxes och dylikt):
 
 <img src='./export/353_Enhetscirkeln.gif' />
 
