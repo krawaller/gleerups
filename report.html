@@ -67,7 +67,7 @@
 
 <p>För att åstadkomma ett fristående kodblock ur detta (vad GeoGebra kallar <strong>applet</strong>) som man sedan kan lägga in i ett annat html-dokument krävs lite enkel handpåläggning. Själva appleten ryms i article-elementet. Denna är &#8216;självförsörjande&#8217;, och kan kopieras och integreras i ett annat html-dokument. Enda förutsättningen är att detta html-dokument laddar in filen <code>web.nocache.js</code> från GeoGebraWeb.</p>
 
-<p>Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras samtidigt, tillsammans med annat html-innehåll. Exemplet ligger också live <a href="http://krawaller.github.com/gleerups/export/applets.html">här</a>.</p>
+<p>Nedan syns exempel på källkoden för ett minimalt dokument där två olika labbar exponeras samtidigt, tillsammans med annat html-innehåll. Exemplet ligger också live <a href="export/applets.html">här</a>.</p>
 
 <p><img src='./bilder/geogebraweb-composite.png' /></p>
 
@@ -113,7 +113,7 @@
 
 <p><img src='./bilder/bossegeoinput_fixed.png' /></p>
 
-<p>&#8230;så fungerar det även i HTML-exporten. För den nyfikne så finns exporten med den &#8220;felaktiga&#8221; koden <a href="http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata.html">här</a>, och den fixade exporten <a href="http://krawaller.github.com/gleerups/export/321_Symmetrisk_andringskvot_derivata_fixed.html">här</a>.</p>
+<p>&#8230;så fungerar det även i HTML-exporten. För den nyfikne så finns exporten med den &#8220;felaktiga&#8221; koden <a href="export/321_Symmetrisk_andringskvot_derivata.html">här</a>, och den fixade exporten <a href="export/321_Symmetrisk_andringskvot_derivata_fixed.html">här</a>.</p>
 
 <p>Detta med att MathQuill endast stöder en delmängd av den LaTeX-syntax som GeoGebra stöder tror jag är den största faran när labbarna skall exporteras. Nu bör förmodligen varje labb kontrolleras efter export ändå, men jag har satt ihop en liten <a href="mathquill_sandbox.html">testsandlåda</a> där Bo och hans kumpaner enkelt kan testa om MathQuill (samma äldre version som GeoGebraWeb använder) kan rendera ett givet LaTeX-uttryck.</p>
 
@@ -145,7 +145,7 @@
 
 <p>Den fullständiga (?) listan över dessa metoder finns <a href="http://wiki.geogebra.org/en/Reference:JavaScript">här</a>. Det finns också en <a href="http://wiki.geogebra.org/en/Manual:Scripting">manual</a> för att scripta applets med JavaScript.</p>
 
-<p>Detta objekt gör det möjligt att interagera med appleten från JavaScriptkod. Jag har skapat <a href="http://krawaller.github.com/gleerups/export/323_Tangent_hackad.html">en liten demonstration</a> där jag hackat en av labbarna så att den kan påverkas med yttre JavaScriptkontroller:</p>
+<p>Detta objekt gör det möjligt att interagera med appleten från JavaScriptkod. Jag har skapat <a href="export/323_Tangent_hackad.html">en liten demonstration</a> där jag hackat en av labbarna så att den kan påverkas med yttre JavaScriptkontroller:</p>
 
 <p><img src='./bilder/hackad.png' /></p>
 
@@ -197,7 +197,7 @@
 
 <h4 id="nbspnbspnbspkommunikationmellantvapplets">2.5.3 &nbsp;&nbsp;&nbsp; Kommunikation mellan två applets</h4>
 
-<p>Jag har redan tidigare demonstrerat ett <a href="http://krawaller.github.com/gleerups/export/applets.html">exempel</a> på ett html-dokument som innehåller två applets samtidigt. Låt oss nu titta på hur vi skulle kunna få två applets att &#8220;prata&#8221; med varandra! <a href="http://krawaller.github.com/gleerups/export/davidskombo.html">Här</a> har jag skapat ett exempel med två enkla labbar; den ena innehåller en cirkel, den andra en stråle:</p>
+<p>Jag har redan tidigare demonstrerat ett <a href="export/applets.html">exempel</a> på ett html-dokument som innehåller två applets samtidigt. Låt oss nu titta på hur vi skulle kunna få två applets att &#8220;prata&#8221; med varandra! <a href="export/davidskombo.html">Här</a> har jag skapat ett exempel med två enkla labbar; den ena innehåller en cirkel, den andra en stråle:</p>
 
 <p><img src="./bilder/kombo.png" /></p>
 
